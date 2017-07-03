@@ -30,7 +30,7 @@ class LinearRegressor(object):
 		pass
 	
 
-	def fit(self, X, y, eta=0.005, standardization=True, delta=1e-8, max_itrs=10000):
+	def fit(self, X, y, eta=0.005, standardization=True, delta=1e-8, max_itrs=1000):
 		'''
 		Fit the linear regression model to the data (X, y).
 
@@ -55,17 +55,15 @@ class LinearRegressor(object):
 		# Run regression until MSE is less than 'eps' (epsilon) or we've exceeded 'max_iters'.
 		for itr in xrange(max_itrs):
 			# Calculate mean squared error (MSE)
-			mse = mean_squared_error(np.dot(X, self.w), y)
-			
 			# If the current MSE is less than the specified tolerance (delta), break out of gradient descent
-			if mse < delta:
+			if mean_squared_error(np.dot(X, self.w), y) < delta:
 				break
 
 			# Apply gradient descent step to parameter vector.
 			self.w -= np.multiply(eta, mean_squared_error_gradient(X, y, self.w))
 
 
-	def predict(self, X):
+	def predict(self, X, standardization=True):
 		'''
 		Predict the dependent \mathbf{y} ndarray given the associated values of regressors ndarray \mathbf{X}.
 
@@ -75,6 +73,10 @@ class LinearRegressor(object):
 		- Returns:
 			\mathbf{X}^{\top} \dot \mathbf{w} + \mathbf{b}
 		'''
+
+		# Data standardization.
+		if standardization:
+			X = np.divide(np.subtract(X, np.mean(X, axis=0)), np.std(X, axis=0))
 
 		# As before, add bias dimension to original data.
 		X = np.concatenate((X, np.ones((X.shape[0], 1))), axis=1)
