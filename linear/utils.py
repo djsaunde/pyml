@@ -19,7 +19,7 @@ def mean_squared_error(y_, y):
 		- y: A tensor of the true values being predicted.
 	
 	Returns:
-		- MSE = \frac{1}{m} \sum_i (\mathbf{predictions} - \mathbf{targets})_i^2.
+		- MSE = \frac{1}{m} \sum_i (\mathbf{y_} - \mathbf{y})_i^2.
 	'''
 	return np.divide(np.sum(np.square(np.subtract(y_, y))), y.size)
 

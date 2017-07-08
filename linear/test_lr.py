@@ -9,8 +9,8 @@ y = np.dot(X, np.random.randint(low=-10, high=10, size=5)) + np.random.randint(l
 model = LinearRegressor()
 model.fit(X, y)
 
-print 'Model weights:', model.w
+print('Model weights:', model.get_params())
 
-print 'Difference between model predictions and ground truth:', model.predict(X) - y
+print('Difference between model predictions and ground truth:', model.predict(X) - y)
 
-print 'Mean squared error between predictions and ground truth:', mean_squared_error(model.predict(X), y)
+print('Mean squared error between predictions and ground truth:', model.get_mean_squared_error(X, y))
