@@ -30,7 +30,7 @@ class LinearRegressor(object):
 		pass
 	
 
-	def fit(self, X, y, eta=0.005, standardization=True, delta=1e-8, max_itrs=1000):
+	def fit(self, X, y, eta=0.001, standardization=True, delta=1e-16, max_itrs=1000, convex_opt=False):
 		'''
 		Fit the linear regression model to the data (X, y).
 
@@ -52,15 +52,20 @@ class LinearRegressor(object):
 		# Initialize parameters arbitarily.
 		self.w = np.random.random(X.shape[1])
 
-		# Run regression until MSE is less than 'eps' (epsilon) or we've exceeded 'max_iters'.
-		for itr in xrange(max_itrs):
-			# Calculate mean squared error (MSE)
-			# If the current MSE is less than the specified tolerance (delta), break out of gradient descent
-			if mean_squared_error(np.dot(X, self.w), y) < delta:
-				break
+		if convex_opt:
+			# Run regression until MSE is less than 'eps' (epsilon) or we've exceeded 'max_iters'.
+			for itr in xrange(max_itrs):
+				# Calculate mean squared error (MSE)
+				# If the current MSE is less than the specified tolerance (delta), break out of gradient descent
+				if mean_squared_error(np.dot(X, self.w), y) < delta:
+					break
 
-			# Apply gradient descent step to parameter vector.
-			self.w -= np.multiply(eta, mean_squared_error_gradient(X, y, self.w))
+				# Apply gradient descent step to parameter ndarray.
+				self.w -= np.multiply(eta, mean_squared_error_gradient(X, y, self.w))
+		
+		else:
+			# Use normal equations to fit linear regression model in one step.
+			self.w = np.dot(np.linalg.inv(np.dot(X.T, X)), np.dot(X.T, y))
 
 
 	def predict(self, X, standardization=True):
