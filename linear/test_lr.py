@@ -13,4 +13,3 @@ print('Model weights:', model.get_params())
 
 print('Difference between model predictions and ground truth:', model.predict(X) - y)
 
-print('Mean squared error between predictions and ground truth:', model.get_mean_squared_error(X, y))

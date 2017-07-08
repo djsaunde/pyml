@@ -53,7 +53,7 @@ class LinearRegressor(object):
 		X = np.concatenate((X, np.ones((X.shape[0], 1))), axis=1)
 
 		# Initialize parameters arbitarily.
-		self.w = np.random.random(X.shape[1])
+		self.set_params(np.random.random(X.shape[1]))
 
 		if convex_opt:
 			# Run regression until MSE is less than 'eps' (epsilon) or we've exceeded 'max_iters'.
@@ -64,11 +64,11 @@ class LinearRegressor(object):
 					break
 
 				# Apply gradient descent step to parameter ndarray.
-				self.w -= np.multiply(eta, get_mean_squared_error_gradient(X, y))
+				self.set_params(self.get_params() - np.multiply(eta, get_mean_squared_error_gradient(X, y)))
 		
 		else:
 			# Use normal equations to fit linear regression model in one step.
-			self.w = np.dot(np.linalg.inv(np.dot(X.T, X)), np.dot(X.T, y))
+			self.set_params(np.dot(np.linalg.inv(np.dot(X.T, X)), np.dot(X.T, y)))
 
 
 	def predict(self, X, standardization=True):
@@ -90,12 +90,12 @@ class LinearRegressor(object):
 		# As before, add bias dimension to original data.
 		X = np.concatenate((X, np.ones((X.shape[0], 1))), axis=1)
 
-		if X.shape[1] != self.w.size:
+		if X.shape[1] != self.get_params().size:
 			raise Exception('Input data incorrectly shaped. Be sure to use the same number of features as was trained on.')
 
 		# Compute predictions via a dot product between the regressors and the parameter + bias vector.
 		try:
-			return np.dot(X, self.w)
+			return np.dot(X, self.get_params())
 		except NameError:
 			raise Exception('Model has not yet been fitted to data.')
 	
@@ -109,6 +109,17 @@ class LinearRegressor(object):
 			raise Exception('Model has not yet been fit to data.')
 
 		return self.w
+
+	
+	def set_params(self, w):
+		'''
+		Sets the parameters \mathbf{w} and b of the lienar regresssion model as a single, concatenated ndarray.
+		
+		- Inputs:
+			- w: The value to set self.w to.
+		'''
+
+		self.w = w
 	
 
 	def get_mean_squared_error(self, X, y, standardization=True):
@@ -124,14 +135,7 @@ class LinearRegressor(object):
 			- MSE = \frac{1}{m} \sum_i (\mathbf{predictions} - \mathbf{targets})_i^2.
 		'''
 
-		# Data standardization.
-		if standardization:
-			X = np.divide(np.subtract(X, np.mean(X, axis=0)), np.std(X, axis=0))
-
-		# As before, add bias dimension to original data.
-		X = np.concatenate((X, np.ones((X.shape[0], 1))), axis=1)
-
-		return mean_squared_error(np.dot(X, self.w), y)
+		return mean_squared_error(np.dot(X, self.get_params()), y)
 	
 	
 	def get_mean_squared_error_gradient(self, X, y):
@@ -146,5 +150,5 @@ class LinearRegressor(object):
 			- \nabla_{\mathbf{w}} MSE = 2 * X^{\top} * T * w - 2 * X^{\top} * y (known as the __normal equations__)
 		'''
 		
-		return mean_squared_error_gradient(X, y, self.w)
+		return mean_squared_error_gradient(X, y, self.get_params())
 
