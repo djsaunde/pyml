@@ -31,7 +31,7 @@ class LinearRegressor(object):
 		self.w = None
 	
 
-	def fit(self, X, y, eta=0.001, standardization=True, delta=1e-16, max_itrs=10000, convex_opt=False):
+	def fit(self, X, y, eta=0.001, delta=1e-16, max_itrs=10000, convex_opt=False):
 		'''
 		Fit the linear regression model to the data (X, y).
 
@@ -39,18 +39,15 @@ class LinearRegressor(object):
 			- X: An ndarray of regressor variable values; i.e., features; i.e., inputs.
 			- y: An ndarray of dependent variable values; i.e., targets; i.e., labels; i.e., targets.
 			- eta: A real-valued parameter representing the learning rate; i.e., gradient descent step size.
-			- standardization: Whether to apply the standardization pre-processing step.
 			- delta: Tolerance parameter for early-stopping the gradient descent algorithm.
 			- max_itrs: The maximum number of iterations to run the gradient descent algorithm before quitting.
 			- convex_opt: Whether or not to use convex optimization (i.e., gradient descent) instead of fitting
 				the model with the normal equations in a single step.
 		'''
-		# Data standardization.
-		if standardization:
-			X = np.divide(np.subtract(X, np.mean(X, axis=0)), np.std(X, axis=0))
-
 		# Add bias dimension to original data.
 		X = np.concatenate((X, np.ones((X.shape[0], 1))), axis=1)
+
+		print X.shape
 
 		# Initialize parameters arbitarily.
 		self.set_params(np.random.random(X.shape[1]))
@@ -71,22 +68,16 @@ class LinearRegressor(object):
 			self.set_params(np.dot(np.linalg.inv(np.dot(X.T, X)), np.dot(X.T, y)))
 
 
-	def predict(self, X, standardization=True):
+	def predict(self, X):
 		'''
 		Predict the dependent \mathbf{y} ndarray given the associated values of regressors ndarray \mathbf{X}.
 
 		- Inputs:
 			- X: An ndarray of regressor variable values; i.e., features; i.e., inputs.
-			- standardization: Whether to zero-mean and normalize the data to have unit variance.
 
 		- Returns:
 			\mathbf{X}^{\top} \dot \mathbf{w} + \mathbf{b}
 		'''
-
-		# Data standardization.
-		if standardization:
-			X = np.divide(np.subtract(X, np.mean(X, axis=0)), np.std(X, axis=0))
-
 		# As before, add bias dimension to original data.
 		X = np.concatenate((X, np.ones((X.shape[0], 1))), axis=1)
 
@@ -122,14 +113,13 @@ class LinearRegressor(object):
 		self.w = w
 	
 
-	def get_mean_squared_error(self, X, y, standardization=True):
+	def get_mean_squared_error(self, X, y):
 		'''
 		Gets the mean squared error of the model evaluated on the dataset (X, y).
 
 		- Inputs:
 			- X: An ndarray of regressor variable values; i.e., features; i.e., inputs.
 			- y: An ndarray of dependent variable values; i.e., targets; i.e., labels, i.e., outputs.
-			- standardization: Whether to zero-mean and normalize the data to have unit variance.
 
 		- Returns:
 			- MSE = \frac{1}{m} \sum_i (\mathbf{predictions} - \mathbf{targets})_i^2.
